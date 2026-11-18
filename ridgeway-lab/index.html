@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ridgeway Legal Clinic: Virtual Law Office (Chapter 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
+<style>
+:root{--ink:#1D2731;--ink2:#56636F;--sheet:#FFFFFF;--paper:#F3F5F7;--rule:#D3D9DF;--ok:#1E6B45;--bad:#8E2F29;--acc:#2E5B88;--focus:#1F5FA8;--glass:rgba(255,255,255,.92);color-scheme:light}
+body.hc{--ink:#000;--ink2:#1b1b1b;--rule:#000;--paper:#fff;--ok:#005a2b;--bad:#8a0000;--acc:#003c8f;--focus:#000;--glass:#fff}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font:1rem/1.45 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#1b1f24;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#c:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button{font:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+#hud{position:fixed;left:12px;top:12px;max-width:min(520px,calc(100% - 24px));background:var(--glass);border-radius:10px;padding:10px 14px;box-shadow:0 4px 18px rgba(0,0,0,.18);z-index:5}
+#hud .brand{font-size:.78rem;color:var(--ink2);margin:0}
+#hudCase{font-weight:700;margin:2px 0 0;font-size:.95rem}
+#hudObj{margin:2px 0 8px;font-size:.92rem}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.btn{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:7px;padding:8px 13px;font-weight:600;font-size:.88rem;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#tools{position:fixed;right:12px;top:12px;display:flex;gap:6px;z-index:5}
+#tools .btn{background:var(--glass);color:var(--ink);border-color:transparent;box-shadow:0 4px 18px rgba(0,0,0,.18)}
+.drawer{position:fixed;right:12px;top:58px;width:min(330px,calc(100% - 24px));background:var(--sheet);border-radius:10px;padding:14px 16px;box-shadow:0 8px 28px rgba(0,0,0,.25);z-index:6;max-height:calc(100% - 80px);overflow:auto}
+.drawer h2{font-size:1rem;margin:0 0 8px}
+.drawer label{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:.9rem}
+#routeList,#textStations{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rbtn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:8px;padding:9px 11px;cursor:pointer}
+.rbtn small{color:var(--ink2);white-space:nowrap}.rbtn.r-current{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}.rbtn.r-locked{opacity:.65}
+#panel{position:fixed;right:12px;top:58px;bottom:12px;width:min(440px,calc(100% - 24px));background:var(--sheet);border-radius:12px;box-shadow:0 10px 36px rgba(0,0,0,.3);z-index:4;display:flex;flex-direction:column}
+#panel header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--rule)}
+#panelTitle{font-size:.82rem;color:var(--ink2);margin:0}
+#panelClose{background:none;border:1px solid var(--rule);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--ink)}
+#panelBody{padding:12px 16px 16px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#panelBody h2{font-size:1.08rem;margin:2px 0 0}
+.lead,.q{margin:0}.q{font-weight:600}
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:grid;grid-template-columns:22px 1fr;gap:6px;text-align:left;font-size:.9rem;background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:9px 11px;cursor:pointer}
+.opt b{color:var(--ink2)}.opt:hover:not(:disabled){border-color:var(--ink)}.opt:disabled{cursor:default}
+.opt.asked{opacity:.65}.opt.sel{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}
+.opt.right{border-color:var(--ok);box-shadow:inset 3px 0 0 var(--ok)}.opt.right b{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);box-shadow:inset 3px 0 0 var(--bad)}.opt.wrong b{color:var(--bad)}.opt.dim{opacity:.55}
+.fb{margin:0;border-left:4px solid var(--ok);background:var(--paper);padding:8px 11px;border-radius:0 6px 6px 0;font-size:.9rem}.fb.bad{border-left-color:var(--bad)}
+.go{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px}.hint{font-size:.82rem;color:var(--ink2)}
+.dialog{display:grid;grid-template-columns:64px 1fr;gap:12px;background:var(--paper);border-radius:10px;padding:10px 12px}
+.portrait svg{width:64px;height:64px;display:block;border-radius:12px}
+.who{margin:0;font-size:.85rem}.who span{color:var(--ink2)}.you{margin:4px 0 0;font-size:.82rem;color:var(--acc);font-weight:600}
+.say{margin:4px 0 0;font:1rem/1.5 "Source Serif 4",Georgia,serif}
+.facts{margin:0;padding-left:18px;font-size:.9rem}
+.roster{list-style:none;margin:0;padding:0;display:grid;gap:6px}.roster li{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+.badge{font-size:.78rem;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--paper)}.b-completed{color:var(--ok)}.b-inprogress{color:var(--acc)}
+.mxwrap{display:flex;justify-content:center}.mx{width:100%;max-width:290px;height:auto}
+.mx-q{fill:rgba(30,107,69,.10)}.mx-g{stroke:#D7DDE2;stroke-width:1}.mx-a{stroke:var(--ink);stroke-width:1.4}.mx-t{font:10px "Public Sans",sans-serif;fill:var(--ink2)}.mx-l{font:600 11px "Public Sans",sans-serif;fill:var(--ink)}
+.mx-you{fill:var(--acc);stroke:#fff;stroke-width:1.5}.mx-prof{fill:#B07D1A;stroke:#fff;stroke-width:1.5}.mx-pt{font:700 10px "Public Sans",sans-serif;fill:#fff}
+.vals{width:100%;border-collapse:collapse;font-size:.85rem}.vals caption{text-align:left;font-weight:700;font-size:.82rem;color:var(--ink2);padding-bottom:3px}.vals th,.vals td{border-bottom:1px solid var(--rule);padding:4px 6px;text-align:left}
+.miss{margin:0;background:var(--paper);border-radius:6px;padding:7px 10px;font-size:.88rem}
+.prof{margin:0;font:.95rem/1.55 "Source Serif 4",Georgia,serif}.prof strong{display:block;font:700 .82rem "Public Sans",sans-serif}
+#markers{position:fixed;inset:0;pointer-events:none;z-index:3}
+.marker{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;background:none;border:0;padding:6px;cursor:pointer}
+.marker .dot{display:block;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.95);border:3px solid var(--acc);box-shadow:0 1px 6px rgba(0,0,0,.35)}
+.marker.m-locked .dot{border-color:#8A949D;background:rgba(255,255,255,.6)}.marker.m-done .dot{border-color:var(--ok)}
+.marker.m-current .dot{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(46,91,136,.55)}50%{box-shadow:0 0 0 9px rgba(46,91,136,0)}}
+body.reduced .marker .dot{animation:none}
+.marker .tip{position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);white-space:nowrap;background:var(--ink);color:#fff;font-size:.78rem;padding:4px 8px;border-radius:5px;opacity:0;pointer-events:none}
+.marker:hover .tip,.marker:focus-visible .tip,.marker.hover .tip{opacity:1}
+#touch{position:fixed;left:14px;bottom:18px;display:none;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:6px;z-index:5}
+#touch button{border:0;border-radius:10px;background:var(--glass);font-size:1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+@media (pointer:coarse){#touch{display:grid}}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .18s;z-index:7}#fade.on{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(15,20,25,.55);display:flex;align-items:center;justify-content:center;z-index:9;padding:16px}
+.modal>div{background:var(--sheet);border-radius:14px;max-width:560px;width:100%;padding:22px 24px;max-height:100%;overflow:auto}
+.modal h1{font-size:1.3rem;margin:0 0 6px}.modal p{margin:0 0 10px}.modal ul{margin:0 0 14px;padding-left:18px;font-size:.92rem}
+#loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1b1f24;color:#E6EBF0;z-index:10;gap:12px}
+#loading .bar{width:240px;height:6px;background:#3A4652;border-radius:3px;overflow:hidden}#loadBar{display:block;height:100%;width:10%;background:#C9D6E0}
+/* text-only mode */
+#textmode{display:none}
+body.textmode{overflow:auto;background:var(--paper)}body.textmode #c,body.textmode #markers,body.textmode #touch,body.textmode #btnRoute{display:none!important}
+body.textmode #textmode{display:block;max-width:760px;margin:8px auto 20px;padding:0 16px}
+body.textmode #hud{position:static;margin:12px auto 0;max-width:760px;box-shadow:none;border:1px solid var(--rule)}body.textmode #tools{position:static;justify-content:flex-end;max-width:760px;margin:10px auto 0;padding:0 16px}
+body.textmode #panel{position:static;width:auto;max-width:760px;margin:12px auto 40px;box-shadow:none;border:1px solid var(--rule)}
+body.textmode html,body.textmode{height:auto}
+@media (max-width:700px){#panel{top:auto;height:60%;left:8px;right:8px;width:auto;bottom:8px}#hud{top:60px;right:12px}#hudObj{font-size:.85rem}#tools .btn{padding:6px 10px}.drawer{top:60px}}
+</style></head><body>
+<canvas id="c" tabindex="0" role="img" aria-label="3D view of the Ridgeway Legal Clinic reception."></canvas>
+<div id="markers"></div>
+<div id="hud" role="region" aria-label="Current task"><p class="brand">Ridgeway Legal Clinic</p><p id="hudCase"></p><p id="hudObj"></p>
+  <div class="row"><button class="btn" id="btnNext" type="button">Go to the next step</button><button class="btn ghost" id="btnRoute" type="button" aria-controls="route" aria-expanded="false">Rooms</button></div></div>
+<div id="tools"><button class="btn" id="btnHelp" type="button">Help</button><button class="btn" id="btnSettings" type="button" aria-controls="settings" aria-expanded="false">Settings</button></div>
+<div class="drawer" id="route" hidden role="region" aria-label="Rooms"><h2>Rooms</h2><ul id="routeList"></ul><p class="hint" style="margin:10px 0 0">Choosing a room walks you there along the corridor.</p></div>
+<div class="drawer" id="settings" hidden role="region" aria-label="Settings"><h2>Settings</h2>
+  <label>Reduce motion <input type="checkbox" id="setMotion"></label>
+  <label>High contrast <input type="checkbox" id="setContrast"></label>
+  <label>Text size <select id="setText"><option value="100">100%</option><option value="115">115%</option><option value="130">130%</option></select></label>
+  <label>Graphics <select id="setProfile"><option value="high">High</option><option value="medium">Medium</option><option value="economy">Economy</option></select></label>
+  <label>View <select id="setMode"><option value="3d">3D office</option><option value="text">Text only</option></select></label>
+  <p class="hint">Walk: W A S D or arrow keys. Look: drag. Tab moves between highlighted objects.</p></div>
+<section id="textmode" aria-label="Text-only version"><h1 style="font-size:1.3rem">Ridgeway Legal Clinic</h1><p id="noGL" hidden>Your browser cannot display the 3D office. Every activity is available below.</p><p>Choose a room to open its activity.</p><ul id="textStations"></ul></section>
+<aside id="panel" hidden aria-labelledby="panelTitle"><header><p id="panelTitle"></p><button id="panelClose" type="button">Close <span class="sr">panel</span></button></header><div id="panelBody"></div></aside>
+<div id="touch" aria-label="Movement buttons"><span></span><button type="button" data-move="0,1" aria-label="Walk forward">▲</button><span></span><button type="button" data-move="-1,0" aria-label="Step left">◀</button><button type="button" data-move="0,-1" aria-label="Walk back">▼</button><button type="button" data-move="1,0" aria-label="Step right">▶</button></div>
+<div id="fade" aria-hidden="true"></div>
+<div id="announce" class="sr" aria-live="polite"></div>
+<div class="modal" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="introH"><div>
+  <h1 id="introH">Your first week at Ridgeway Legal Clinic</h1>
+  <p>Three clients are waiting. For each one, interview the client, find the governing law in the library, decide which courts can hear the case, choose the advice you would sign, and see how it played out.</p>
+  <ul><li>Walk with W A S D or the arrow keys; drag to look around. On a phone, use the arrow pad.</li><li>Click glowing markers or objects (the intake folder, law books, court models, dossiers) to work with them.</li><li>“Go to the next step” walks you to the right room. Prefer not to walk? Use the guided route or the text-only version.</li></ul>
+  <p class="hint" style="font-size:.78rem">Sofa, chairs, plant and vase: Khronos glTF Sample Assets (Wayfair LLC; Darmstadt Graphics Group GmbH), CC BY 4.0. Client models by NABEEL619 (Sketchfab), CC BY 4.0. Animations: Mixamo.</p>
+  <div class="row"><button class="btn" id="introStart" type="button">Explore the office</button><button class="btn ghost" id="introGuided" type="button">Guided route</button><button class="btn ghost" id="introText" type="button">Text-only version</button></div></div></div>
+<div id="loading" role="status"><p>Opening the office…</p><span class="bar"><span id="loadBar"></span></span></div>
+<script>
+setTimeout(function(){if(window.__labBooted)return;var l=document.getElementById('loading');if(!l)return;
+l.innerHTML='<div style="max-width:560px;padding:24px;line-height:1.5;text-align:left"><h1 style="font-size:1.2rem">The 3D office could not start</h1>'+
+(location.protocol==='file:'?'<p>This page was opened directly from your disk (file://). Browsers block the 3D modules in that mode.</p><p>Do one of the following:</p><ul><li>Open <strong>ridgeway-lab-standalone.html</strong>, which works with a double click; or</li><li>Run a local server in this folder (<code>python3 -m http.server</code>) and open http://localhost:8000; or</li><li>Use the published GitHub Pages address.</li></ul>':'<p>Your browser could not load the lab files. Check your connection and reload the page.</p>')+'</div>';},6000);
+</script>
+<script type="module" src="./js/main.js"></script>
+</body></html>
