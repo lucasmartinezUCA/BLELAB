@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One Product, Many Sources of Law: The Brightwell Spray Bottle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#cfaa65; --label:#206582; --title:#092f49; --text:#33444f; --muted:#677884;
+  --line:#d9e6ea; --line2:#cbdce1; --tile:#eef4f5; --item:#f8fbfb;
+  --primary:#104f6d; --primary-h:#0b3d55; --bad:#c9463b; --bad-bg:#fcf0ee; --ok:#2b9c74;
+  /* the four layers of legal authority */
+  --tC:#b98a2e; --tS:#104f6d; --tR:#6a57d6; --tP:#2b9c74;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:"DM Sans",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55}
+[hidden]{display:none!important}
+
+.lab{max-width:1240px;margin:0 auto;height:max(640px,100vh);display:flex;flex-direction:column;
+  background:#fff;border:1px solid #d8e6ea;border-top:4px solid var(--gold);border-radius:16px;padding:16px 20px 14px;position:relative}
+.lab.fs-fallback{position:fixed;inset:0;z-index:50;max-width:none;height:100%;border-radius:0}
+.head{display:grid;grid-template-columns:1fr auto;gap:0 24px;align-items:start;margin-bottom:12px;flex:none}
+.kicker{display:block;font-size:.76rem;font-weight:700;letter-spacing:.09em;color:var(--label);margin-bottom:4px}
+.head h2{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2;margin:0 0 6px;color:var(--title);letter-spacing:-.005em}
+.head .q{grid-column:1/-1;margin:0;color:var(--text);max-width:98ch;font-size:.92rem;line-height:1.55}
+.head .q strong{color:var(--title)}
+.head .note-ill{grid-column:1/-1;margin:2px 0 0;font-size:.78rem;color:var(--muted)}
+.pillbtn{font:inherit;font-size:.78rem;font-weight:700;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:999px;padding:7px 15px;cursor:pointer;align-self:start}
+.pillbtn:hover{border-color:var(--primary);background:var(--tile)}
+
+.stage{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(330px,1fr);grid-template-rows:minmax(0,1fr);gap:16px}
+.viewport{position:relative;min-height:0;border-radius:14px;border:1px solid var(--line);overflow:hidden;
+  background:radial-gradient(110% 85% at 50% 42%,#fff,#eef4f5 58%,#e2ecef)}
+#cv{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
+#cv:active{cursor:grabbing}
+.tools{position:absolute;right:10px;top:10px;display:flex;gap:6px;z-index:3}
+.tools button{font:inherit;font-size:.78rem;font-weight:700;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:999px;padding:6px 13px;cursor:pointer}
+.tools button:hover{border-color:var(--primary);background:var(--tile)}
+.tools button[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.readout{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;pointer-events:none;z-index:3}
+.stat{background:#fff;border:1px solid var(--line2);border-radius:999px;padding:4px 12px 4px 10px;font-size:.78rem;font-weight:600;color:var(--muted);box-shadow:0 1px 2px #092f4914;display:flex;align-items:baseline;gap:6px}
+.stat b{font-family:var(--serif);font-size:1.05rem;color:var(--title);font-weight:700;font-variant-numeric:tabular-nums}
+.hint{position:absolute;left:12px;bottom:10px;font-size:.74rem;color:var(--muted);background:#ffffffd9;padding:3px 10px;border-radius:999px;pointer-events:none;z-index:3}
+.loading{position:absolute;inset:0;display:grid;place-items:center;z-index:4;pointer-events:none}
+.loading div{background:#fff;border:1px solid var(--line2);border-radius:12px;padding:12px 18px;font-size:.88rem;color:var(--title)}
+
+/* hotspot markers (HTML overlay projected from 3D) */
+.hs-layer{position:absolute;inset:0;pointer-events:none;z-index:2}
+.hs{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:0;padding:0;cursor:pointer;pointer-events:auto;
+  background:#fff;box-shadow:0 0 0 2px var(--primary),0 2px 6px #092f4940;display:grid;place-items:center;transition:transform .15s,opacity .2s}
+.hs::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--primary)}
+.hs.new::before{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--gold);animation:pulse 1.8s ease-out infinite}
+.hs.seen{box-shadow:0 0 0 2px var(--ok),0 2px 6px #092f4940}
+.hs.seen::after{content:"✓";width:auto;height:auto;background:none;color:var(--ok);font-weight:700;font-size:15px;line-height:1}
+.hs.active{transform:scale(1.18);box-shadow:0 0 0 3px var(--gold),0 2px 8px #092f4950}
+.hs.dim{opacity:.25}
+.hs.away{opacity:0;pointer-events:none}
+.hs .tip{position:absolute;left:36px;top:50%;transform:translateY(-50%);white-space:nowrap;background:var(--title);color:#fff;font-size:.74rem;font-weight:600;padding:3px 9px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .15s}
+.hs:hover .tip,.hs:focus-visible .tip{opacity:1}
+.hs .rings{position:absolute;left:50%;top:100%;transform:translate(-50%,4px);display:flex;gap:3px}
+.hs .rings i{width:9px;height:9px;border-radius:50%;display:block;box-shadow:0 0 0 1.5px #fff}
+@keyframes pulse{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.shell-tag{position:absolute;transform:translate(-50%,-100%);font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px;background:#fff;border:1.5px solid currentColor;white-space:nowrap;pointer-events:none;z-index:2}
+
+/* panel */
+.panel{display:flex;flex-direction:column;min-height:0;min-width:0}
+.steps{display:flex;gap:4px;background:var(--tile);padding:4px;border-radius:10px;flex:none}
+.steps button{flex:1;font:inherit;font-size:.8rem;font-weight:700;line-height:1.2;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 4px;cursor:pointer}
+.steps button[aria-selected="true"]{background:#fff;color:var(--title);border-color:var(--line2)}
+.steps button.done .n::after{content:"✓";color:var(--ok);margin-left:3px}
+.step{padding:14px 4px 6px 0;overflow:auto;flex:1;min-height:0;overscroll-behavior:contain}
+.step h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;margin:0 0 6px;line-height:1.25;color:var(--title)}
+.step p{margin:0 0 10px;font-size:.88rem}
+.step p.task{color:var(--title);font-weight:600}
+.predict{background:var(--item);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:0 0 12px}
+.predict p{margin:0 0 8px;color:var(--title);font-size:.86rem;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.78rem;font-weight:700;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:999px;padding:6px 13px;cursor:pointer}
+.chip:hover{border-color:var(--primary);background:var(--tile)}
+.chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.act{display:block;width:100%;font:inherit;font-size:.86rem;font-weight:700;border:0;border-radius:8px;padding:11px 18px;background:var(--primary);color:#fff;cursor:pointer;margin:0 0 10px}
+.act:hover{background:var(--primary-h)}
+.act.quiet{width:auto;display:inline-block;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:999px;font-size:.78rem;padding:7px 15px}
+.act.quiet:hover{border-color:var(--primary);background:var(--tile)}
+.note{background:var(--item);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:4px 0 10px;font-size:.86rem}
+.note p{margin:0 0 6px;font-size:.86rem}
+.note p:last-child{margin:0}
+.note strong{color:var(--title)}
+.note.warn{background:#fbf5e8;border-color:#ecdcb6;border-left:3px solid var(--gold)}
+.small{font-size:.78rem;color:var(--muted)}
+
+.plist{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.plist button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;font:inherit;font-size:.82rem;font-weight:600;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:999px;padding:6px 12px 6px 7px;cursor:pointer}
+.plist button:hover{border-color:var(--primary)}
+.plist button[aria-current="true"]{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+.plist .dot{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--primary);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ok)}
+.plist .seen .dot{border-color:var(--ok)}
+.plist .where{margin-left:auto;font-size:.72rem;color:var(--muted)}
+
+.card{background:#fff;border:1px solid var(--line2);border-top:3px solid var(--gold);border-radius:12px;padding:12px 14px;margin:0 0 12px}
+.card h4{font-family:var(--serif);font-size:1.05rem;margin:0 0 6px;color:var(--title);line-height:1.3}
+.card .see{font-size:.84rem;color:var(--muted);margin:0 0 8px}
+.tiers{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.tpill{font-size:.72rem;font-weight:700;color:#fff;border-radius:999px;padding:3px 10px}
+.card dl{margin:0;font-size:.86rem}
+.card dt{font-weight:700;color:var(--title);margin-top:8px;font-size:.8rem}
+.card dd{margin:2px 0 0}
+.card .beyond{margin-top:10px;border-left:3px solid var(--gold);padding:2px 0 2px 10px;font-size:.84rem}
+.card .sec{margin-top:10px;font-size:.76rem;color:var(--muted)}
+.card .act{margin:10px 0 0}
+
+.layers{display:grid;gap:6px;margin:0 0 12px}
+.layers button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;font-size:.84rem;color:var(--title);background:#fff;border:1px solid var(--line2);border-radius:12px;padding:8px 12px;cursor:pointer}
+.layers button[aria-pressed="true"]{border-color:currentColor;box-shadow:inset 3px 0 0 currentColor}
+.layers .sw{width:12px;height:12px;border-radius:50%;flex:none}
+.layers .cnt{margin-left:auto;font-size:.76rem;color:var(--muted);font-weight:600}
+.matrix{width:100%;border-collapse:collapse;font-size:.78rem;margin:0 0 12px}
+.matrix th,.matrix td{border-bottom:1px solid var(--line);padding:5px 4px;text-align:center}
+.matrix th{background:var(--primary);color:#fff;font-weight:700}
+.matrix th:first-child{border-radius:8px 0 0 0}.matrix th:last-child{border-radius:0 8px 0 0}
+.matrix td:first-child,.matrix th:first-child{text-align:left}
+.matrix i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.matrix .unk{color:var(--muted)}
+.matrix caption{caption-side:bottom;text-align:left;font-size:.74rem;color:var(--muted);padding-top:6px}
+.steps5{margin:0 0 12px;padding:0;list-style:none;counter-reset:s}
+.steps5 li{counter-increment:s;position:relative;padding:6px 0 6px 30px;font-size:.84rem;border-bottom:1px dashed var(--line)}
+.steps5 li::before{content:counter(s);position:absolute;left:0;top:6px;width:20px;height:20px;border-radius:50%;background:var(--tile);color:var(--title);font-weight:700;font-size:.72rem;display:grid;place-items:center}
+.steps5 b{color:var(--title)}
+textarea{width:100%;min-height:96px;font:inherit;font-size:.86rem;border:1px solid var(--line2);border-radius:12px;padding:10px 12px;resize:vertical;color:var(--text)}
+textarea:focus{outline:2px solid var(--primary);outline-offset:1px}
+.credit{flex:none;margin:8px 0 0;font-size:.7rem;color:var(--muted)}
+.credit a{color:inherit}
+
+/* Refill Club overlay */
+.modal{position:fixed;inset:0;z-index:60;background:#092f49a6;display:grid;place-items:center;padding:16px}
+.modal .box{width:min(560px,100%);height:min(92%,860px);background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;border-top:4px solid var(--gold)}
+.modal .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted)}
+.modal iframe{flex:1;border:0;width:100%}
+
+button:focus-visible,.chip:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (max-height:700px) and (min-width:861px){ .head .q,.head .note-ill{display:none} }
+@media (max-width:860px){
+  .lab{padding:10px 10px 12px;border-radius:14px;height:auto;min-height:100vh}
+  .stage{grid-template-columns:1fr;grid-template-rows:auto auto;gap:10px}
+  .viewport{height:min(62vh,520px)}
+  .head{margin-bottom:8px}
+  .kicker{font-size:.68rem;margin-bottom:2px}
+  .head h2{font-size:1.12rem;margin:0}
+  .head .q,.head .note-ill{display:none}
+  .stat{font-size:.7rem;padding:3px 9px 3px 8px}
+  .stat b{font-size:.92rem}
+  .tools{top:auto;bottom:8px;right:8px;gap:4px}
+  .tools button{padding:5px 10px;font-size:.72rem}
+  .hint{display:none}
+  .step{overflow:visible}
+  .steps button{padding:6px 2px;font-size:.72rem}
+  .hs .tip{display:none}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+</head>
+<body>
+<div class="lab" id="lab">
+  <header class="head">
+    <div><span class="kicker">Interactive 3D Lab</span>
+      <h2>One Product, Many Sources of Law: The Brightwell Spray Bottle</h2></div>
+    <button class="pillbtn" id="resetAll" type="button">Start over</button>
+    <p class="q">A manager rarely faces “a law.” Rotate this ordinary cleaning spray and open each marked part. For every part, identify <strong>which source of law governs it, who makes and enforces that rule, and what kind of exposure it creates</strong>. Then switch on the X-ray view to see how the layers stack.</p>
+    <p class="note-ill">Brightwell Home Co. is fictional. The lab models the reasoning in this chapter; it does not describe the real regulatory requirements for any product.</p>
+  </header>
+
+  <div class="stage">
+    <div class="viewport" id="viewport">
+      <canvas id="cv" tabindex="0" aria-label="3D model of the Brightwell spray bottle. Drag to rotate, scroll or pinch to zoom. Use the list of parts in the panel to open each one."></canvas>
+      <div class="hs-layer" id="hsLayer"></div>
+      <div class="readout" aria-live="polite">
+        <span class="stat">Parts explored <b id="nSeen">0/6</b></span>
+        <span class="stat">Layers lit <b id="nLayers">0/4</b></span>
+      </div>
+      <div class="tools">
+        <button type="button" id="xrayBtn" aria-pressed="false">X-ray view</button>
+        <button type="button" id="resetView">Reset view</button>
+        <button type="button" id="fsBtn">Full screen</button>
+      </div>
+      <span class="hint">Drag to rotate · scroll to zoom · click a marker</span>
+      <div class="loading" id="loading"><div id="loadMsg">Loading the 3D model…</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="steps" role="tablist" aria-label="Lab steps">
+        <button role="tab" id="t0" aria-selected="true" aria-controls="s0"><span class="n">1</span> Predict</button>
+        <button role="tab" id="t1" aria-selected="false" aria-controls="s1"><span class="n">2</span> Explore</button>
+        <button role="tab" id="t2" aria-selected="false" aria-controls="s2"><span class="n">3</span> X-ray</button>
+        <button role="tab" id="t3" aria-selected="false" aria-controls="s3"><span class="n">4</span> Apply</button>
+      </div>
+
+      <section class="step" id="s0" role="tabpanel" aria-labelledby="t0">
+        <h3>How many sources of law govern one bottle?</h3>
+        <p>Brightwell Home Co. makes this all-purpose cleaner in State A and sells it in States B and C. It carries a label, a marketing claim, a QR code to a refill subscription, a safety seal and a child-resistant trigger.</p>
+        <div class="predict">
+          <p>Before you explore: how many distinct sources of law do you expect to govern this single product?</p>
+          <div class="chips" id="predChips">
+            <button class="chip" type="button" data-v="1" aria-pressed="false">Just one</button>
+            <button class="chip" type="button" data-v="2" aria-pressed="false">2 or 3</button>
+            <button class="chip" type="button" data-v="4" aria-pressed="false">4 or 5</button>
+            <button class="chip" type="button" data-v="6" aria-pressed="false">6 or more</button>
+          </div>
+        </div>
+        <p class="small" id="predNote">Your prediction is not graded. You will compare it with what you find.</p>
+        <button class="act" type="button" id="goExplore">Start exploring the bottle</button>
+      </section>
+
+      <section class="step" id="s1" role="tabpanel" aria-labelledby="t1" hidden>
+        <h3>Open each marked part</h3>
+        <p class="task">Click a marker on the bottle, or choose a part below. Rotate the bottle to find the markers on the back.</p>
+        <ul class="plist" id="plist"></ul>
+        <div id="cardHost"></div>
+        <button class="act" type="button" id="goXray" hidden>All parts explored: switch on the X-ray view</button>
+      </section>
+
+      <section class="step" id="s2" role="tabpanel" aria-labelledby="t2" hidden>
+        <h3>The layers stack on the same object</h3>
+        <p>In X-ray view, each shell is one level of the hierarchy you studied: the Constitution outermost, then statutes, agency regulations and, closest to the product, the common law built by courts. Choose a layer to see which parts it reaches.</p>
+        <div class="layers" id="layers"></div>
+        <table class="matrix" id="matrix" aria-label="Parts of the bottle and the layers of law that govern them"></table>
+        <div class="note warn" id="xrayTake"><p><strong>What to notice.</strong> Every part sits inside the constitutional shell, and almost every part is governed by two layers at once. Identifying “the” applicable law usually means identifying several, and knowing which one prevails when they collide.</p></div>
+        <button class="act" type="button" id="goApply">Apply the method</button>
+      </section>
+
+      <section class="step" id="s3" role="tabpanel" aria-labelledby="t3" hidden>
+        <h3>From the bottle to the method</h3>
+        <div class="note" id="predBack"></div>
+        <p>Section 06 describes how a manager identifies the applicable law. Here is the method applied to the recycling instructions:</p>
+        <ol class="steps5">
+          <li><b>Characterize the situation.</b> The same bottle carries different recycling instructions for State B and State C.</li>
+          <li><b>Identify the legal issue.</b> Which disposal and labeling duties apply to a product sold in two states?</li>
+          <li><b>Determine the jurisdiction.</b> Recycling is largely regulated by each state, within limits set by any applicable federal law.</li>
+          <li><b>Locate the level of authority.</b> State statutes, detailed by state agency rules; federal law prevails only where it validly preempts them.</li>
+          <li><b>Anticipate interpretation.</b> Would a court read the federal labeling rules as leaving room for state recycling instructions? The chapter suggests asking how courts and agencies are likely to read the rule, not how Brightwell would like them to.</li>
+        </ol>
+        <p class="task">Now choose a different part of the bottle and run the same five steps. Note where you were unsure.</p>
+        <label class="sr" for="refl">Your five-step analysis</label>
+        <textarea id="refl" placeholder="Part I chose: …&#10;1. Situation: …&#10;2. Issue: …"></textarea>
+        <p class="small">Your notes stay in this browser window. They are not submitted or saved.</p>
+        <button class="act quiet" type="button" id="againBtn">Explore the bottle again</button>
+      </section>
+    </div>
+  </div>
+  <p class="credit">3D model: “Hair Spray” by Armin Rezaei (<a href="https://sketchfab.com/3d-models/hair-spray-30c8bd5c8df14039a6fdf7776f08b3c1" target="_blank" rel="noopener">Sketchfab</a>), licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>; labels and materials modified.</p>
+
+  <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Brightwell Refill Club page">
+    <div class="box">
+      <div class="bar"><span>Where the QR code leads</span><button class="pillbtn" type="button" id="closeModal">Close</button></div>
+      <iframe id="refillFrame" title="Brightwell Refill Club" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+'use strict';
+var MODEL_URL = 'brightwell_cleaning_spray.glb';
+var REFILL_URL = 'https://lucasmartinezuca.github.io/BLELAB/cap01/BriHomCo/';
+
+var TIERS = {
+  C:{name:'Constitution', color:'#b98a2e', k:1.85},
+  S:{name:'Statutes', color:'#104f6d', k:1.6},
+  R:{name:'Agency regulations', color:'#6a57d6', k:1.37},
+  P:{name:'Common law and precedent', color:'#2b9c74', k:1.16}
+};
+var TIER_ORDER = ['C','S','R','P'];
+
+/* where: {label:'front'|'back', uv:[u,v]} or {mesh:'trigger'} or {seal:true} */
+var PARTS = [
+  {id:'origin', name:'“Made in State A, distributed in States B and C”', short:'Origin line', side:'Back',
+   where:{label:'back', uv:[0.9,0.765]}, tiers:['C','S'],
+   see:'The back label states where the bottle is made and where it is sold.',
+   gov:'The U.S. Constitution. Because Brightwell ships across state lines, the Commerce Clause allows Congress to regulate the product, and the Supremacy Clause decides which rule prevails when a valid federal law and a state law conflict.',
+   who:'Congress acts within its enumerated powers; courts decide whether a federal rule displaces a state rule.',
+   exp:'None by itself. This layer decides which other rules can reach the bottle at all.',
+   beyond:'', sec:'Sections 01 and 02: hierarchy of sources; federalism and preemption'},
+  {id:'warn', name:'Ingredients and caution panel', short:'Warnings', side:'Back',
+   where:{label:'back', uv:[0.9,0.6]}, tiers:['S','R'],
+   see:'“Contains: cleaning agents, fragrance, Ingredient X.” “Keep out of reach of children. Avoid contact with eyes.”',
+   gov:'A federal statute that sets labeling duties for household products, and the administrative regulations that fill in the details: which warnings, what wording, how visible.',
+   who:'Congress enacts the statute; an administrative agency issues the rules, inspects and enforces them.',
+   exp:'Administrative enforcement and civil penalties. A missing warning can also support a private lawsuit. If State C demanded different wording, a manager would ask whether the federal rule preempts it, expressly or because the two conflict.',
+   beyond:'', sec:'Sections 02 and 05: preemption; administrative agencies'},
+  {id:'recycle', name:'Recycling instructions for States B and C', short:'Recycling', side:'Back',
+   where:{label:'back', uv:[0.1,0.86]}, tiers:['S','R'],
+   see:'State B: recycle bottle and cap together. State C: remove the sprayer first. Same bottle, two instructions.',
+   gov:'State statutes, often detailed by state agency rules. Recycling is largely left to the states, so the rules differ across the market.',
+   who:'State legislatures and state environmental agencies. Federal labeling law displaces them only where it validly preempts them.',
+   exp:'State administrative fines and compliance costs that multiply with every state Brightwell enters.',
+   beyond:'Brightwell could simply stop selling in the stricter state. That is lawful, but if customers and employees read it as dodging environmental standards, the company pays in trust (Treviño & Nelson, 2021).',
+   sec:'Section 02: federalism and the allocation of regulatory authority'},
+  {id:'claim', name:'“Eco-safe formula” and the refill QR code', short:'Marketing', side:'Front',
+   where:{label:'front', uv:[0.9,0.69]}, tiers:['S','R'],
+   see:'A green badge promises an “Eco-safe formula.” A banner invites you to scan for refills, which leads to a subscription offer.',
+   gov:'The Federal Trade Commission Act, a federal statute that prohibits unfair or deceptive acts or practices in commerce.',
+   who:'The Federal Trade Commission investigates campaigns, issues rules within its authority and brings enforcement actions. It asks what net impression the message creates for a reasonable consumer, not whether each word is literally true.',
+   exp:'FTC enforcement, such as orders to stop the practice and civil remedies.',
+   beyond:'Neither the bottle nor the banner mentions a price. Scan or open the QR code and judge the offer as a customer would.',
+   sec:'Section 05: administrative agencies and the regulatory environment', qr:true},
+  {id:'trigger', name:'Trigger and child-resistant lock', short:'Trigger', side:'Top',
+   where:{mesh:'trigger'}, tiers:['P'],
+   see:'The sprayer has a lock meant to stop children from using it.',
+   gov:'State tort law: negligence, or strict liability for a defective product. These doctrines were built by courts case by case, and the Restatements guide judges without binding them.',
+   who:'State courts, in lawsuits brought by the injured party. A precedent binds lower courts in the same jurisdiction; decisions from other states only persuade.',
+   exp:'Civil liability. If the lock fails and a child is hurt, Brightwell may owe damages even if it acted carefully, under strict liability.',
+   beyond:'', sec:'Sections 03 and 04: precedent; civil liability regimes'},
+  {id:'seal', name:'“Safety tested” seal, Lot 2026-117', short:'Safety seal', side:'Front',
+   where:{seal:true}, tiers:['P','S'],
+   see:'A round seal tells buyers that this production lot was safety tested.',
+   gov:'Two regimes at once. Tort law governs compensation if a product from this lot injures someone. Criminal statutes govern what happens if managers falsified the test records behind the seal.',
+   who:'Courts hear the injured party’s civil claim; prosecutors bring criminal charges, which must meet a higher burden of proof.',
+   exp:'Both. The company faces civil liability, and the individual managers who falsified records may face criminal prosecution. Same conduct, different goals: compensation versus punishment.',
+   beyond:'A seal that exists only for inspectors builds the superficial compliance culture the chapter warns against (Treviño & Nelson, 2021).',
+   sec:'Section 04: civil and criminal liability regimes'}
+];
+
+var state = {pred:null, seen:{}, active:null, xray:false, layer:null, step:0};
+var three={ready:false}, markers={}, shells={}, hsPos={};
+var $ = function(id){return document.getElementById(id);};
+
+/* ---------- panel ---------- */
+var tabs=[0,1,2,3].map(function(i){return $('t'+i);}), panes=[0,1,2,3].map(function(i){return $('s'+i);});
+function goStep(i){
+  state.step=i;
+  tabs.forEach(function(t,k){t.setAttribute('aria-selected',k===i?'true':'false');t.tabIndex=k===i?0:-1;});
+  panes.forEach(function(p,k){p.hidden=k!==i;});
+  if(i===2 && !state.xray) setXray(true);
+  if(i===3) renderPredBack();
+  panes[i].scrollTop=0;
+}
+tabs.forEach(function(t,k){
+  t.addEventListener('click',function(){goStep(k);});
+  t.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var n=(k+(e.key==='ArrowRight'?1:3))%4;goStep(n);tabs[n].focus();e.preventDefault();}
+  });
+});
+Array.prototype.forEach.call($('predChips').children,function(c){
+  c.addEventListener('click',function(){
+    state.pred=+c.getAttribute('data-v');
+    Array.prototype.forEach.call($('predChips').children,function(o){o.setAttribute('aria-pressed',o===c?'true':'false');});
+    $('predNote').textContent='Prediction recorded: '+c.textContent.toLowerCase()+'. Keep it in mind as you explore.';
+    tabs[0].classList.add('done');
+  });
+});
+$('goExplore').addEventListener('click',function(){goStep(1);});
+$('goXray').addEventListener('click',function(){goStep(2);});
+$('goApply').addEventListener('click',function(){goStep(3);});
+$('againBtn').addEventListener('click',function(){setXray(false);goStep(1);});
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function buildList(){
+  var ul=$('plist'); ul.innerHTML='';
+  PARTS.forEach(function(p){
+    var li=document.createElement('li'); if(state.seen[p.id]) li.className='seen';
+    var b=document.createElement('button'); b.type='button';
+    b.innerHTML='<span class="dot">'+(state.seen[p.id]?'✓':'')+'</span><span>'+esc(p.short)+'</span><span class="where">'+p.side+'</span>';
+    if(state.active===p.id) b.setAttribute('aria-current','true');
+    b.addEventListener('click',function(){openPart(p.id,true);});
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+function tierPills(ts){return ts.map(function(t){return '<span class="tpill" style="background:'+TIERS[t].color+'">'+TIERS[t].name+'</span>';}).join('');}
+function openPart(id,fly){
+  var p=PARTS.filter(function(x){return x.id===id;})[0]; if(!p) return;
+  state.active=id; state.seen[id]=true;
+  if(state.step!==1) goStep(1);
+  var h='<article class="card" aria-live="polite"><h4>'+esc(p.name)+'</h4><p class="see">'+esc(p.see)+'</p>'+
+    '<div class="tiers">'+tierPills(p.tiers)+'</div><dl>'+
+    '<dt>What governs it</dt><dd>'+esc(p.gov)+'</dd>'+
+    '<dt>Who makes and enforces the rule</dt><dd>'+esc(p.who)+'</dd>'+
+    '<dt>Exposure</dt><dd>'+esc(p.exp)+'</dd></dl>'+
+    (p.beyond?'<p class="beyond"><strong>Beyond compliance.</strong> '+esc(p.beyond)+'</p>':'')+
+    (p.qr?'<button class="act" type="button" id="openRefill">Open the page behind the QR code</button>':'')+
+    '<p class="sec">'+esc(p.sec)+'</p></article>';
+  $('cardHost').innerHTML=h;
+  if(p.qr) $('openRefill').addEventListener('click',openModal);
+  var card=$('cardHost').firstChild; if(card&&card.scrollIntoView&&window.innerWidth>860) card.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  buildList(); updateCounts(); updateMarkers(true);
+  if(fly && three.ready) flyTo(id);
+  var n=Object.keys(state.seen).length; $('goXray').hidden = n<PARTS.length;
+  if(n===PARTS.length) tabs[1].classList.add('done');
+}
+function litTiers(){var s={};PARTS.forEach(function(p){if(state.seen[p.id])p.tiers.forEach(function(t){s[t]=1;});});return s;}
+function updateCounts(){
+  $('nSeen').textContent=Object.keys(state.seen).length+'/'+PARTS.length;
+  $('nLayers').textContent=Object.keys(litTiers()).length+'/4';
+  buildLayers(); buildMatrix();
+}
+function buildLayers(){
+  var host=$('layers'); host.innerHTML='';
+  TIER_ORDER.forEach(function(t){
+    var n=PARTS.filter(function(p){return state.seen[p.id]&&(t==='C'||p.tiers.indexOf(t)>=0);}).length;
+    var b=document.createElement('button'); b.type='button'; b.style.color=TIERS[t].color;
+    b.setAttribute('aria-pressed',state.layer===t?'true':'false');
+    b.innerHTML='<span class="sw" style="background:'+TIERS[t].color+'"></span><span style="color:var(--title)">'+TIERS[t].name+'</span><span class="cnt">'+(t==='C'?'frames '+n+' part'+(n===1?'':'s'):n+' part'+(n===1?'':'s')+' found')+'</span>';
+    b.addEventListener('click',function(){state.layer=(state.layer===t?null:t);if(!state.xray)setXray(true);buildLayers();applyLayer();});
+    host.appendChild(b);
+  });
+}
+function buildMatrix(){
+  var h='<thead><tr><th scope="col">Part</th>'+TIER_ORDER.map(function(t){return '<th scope="col" title="'+TIERS[t].name+'">'+TIERS[t].name.split(' ')[0]+'</th>';}).join('')+'</tr></thead><tbody>';
+  PARTS.forEach(function(p){
+    var seen=state.seen[p.id];
+    h+='<tr><td>'+esc(p.short)+'</td>'+TIER_ORDER.map(function(t){
+      if(!seen) return '<td class="unk">?</td>';
+      if(p.tiers.indexOf(t)>=0) return '<td><i style="background:'+TIERS[t].color+'" title="Governs directly"></i><span class="sr">governs directly</span></td>';
+      if(t==='C') return '<td><i style="box-shadow:inset 0 0 0 2px '+TIERS.C.color+'" title="Frames indirectly"></i><span class="sr">frames indirectly</span></td>';
+      return '<td><span class="sr">no</span></td>';
+    }).join('')+'</tr>';
+  });
+  $('matrix').innerHTML=h+'</tbody><caption>Filled dot: governs the part directly. Ring: the Constitution frames every other rule, so it reaches each part indirectly.</caption>';
+}
+function renderPredBack(){
+  var n=Object.keys(state.seen).length, labels={1:'just one source',2:'two or three sources',4:'four or five sources',6:'six or more sources'};
+  var txt = state.pred? '<p><strong>You predicted '+labels[state.pred]+'.</strong> ' : '<p><strong>You did not record a prediction.</strong> ';
+  txt += 'Across the six parts, the bottle engages at least seven distinct sources: the Constitution, a federal labeling statute and its agency rules, state recycling laws, the FTC Act as enforced by the FTC, tort law built by precedent, and criminal statutes. Together they reach all four levels of the hierarchy.</p>';
+  if(n<PARTS.length) txt+='<p class="small">You have explored '+n+' of '+PARTS.length+' parts. The count above includes the ones you have not opened yet.</p>';
+  if(state.pred && state.pred<6) txt+='<p>The gap between your prediction and the count is the chapter’s point: one product is never governed by just one rule.</p>';
+  $('predBack').innerHTML=txt;
+}
+$('resetAll').addEventListener('click',function(){
+  state.pred=null; state.seen={}; state.active=null; state.layer=null;
+  Array.prototype.forEach.call($('predChips').children,function(o){o.setAttribute('aria-pressed','false');});
+  $('predNote').textContent='Your prediction is not graded. You will compare it with what you find.';
+  $('cardHost').innerHTML=''; $('refl').value=''; $('goXray').hidden=true;
+  tabs.forEach(function(t){t.classList.remove('done');});
+  setXray(false); buildList(); updateCounts(); updateMarkers(true); goStep(0);
+  if(three.ready) resetView();
+});
+
+/* ---------- modal ---------- */
+var lastFocus=null;
+function openModal(){lastFocus=document.activeElement; var f=$('refillFrame'); if(!f.src) f.src=REFILL_URL; $('modal').hidden=false; $('closeModal').focus();}
+function closeModal(){$('modal').hidden=true; if(lastFocus) lastFocus.focus();}
+$('closeModal').addEventListener('click',closeModal);
+$('modal').addEventListener('click',function(e){if(e.target===$('modal'))closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('modal').hidden)closeModal();});
+window.addEventListener('message',function(e){var d=e.data; if(d&&d.source==='brightwell-refill'&&d.action==='close')closeModal();});
+
+/* ---------- full screen ---------- */
+$('fsBtn').addEventListener('click',function(){
+  var lab=$('lab');
+  var inFs=document.fullscreenElement||document.webkitFullscreenElement||lab.classList.contains('fs-fallback');
+  if(inFs){
+    if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitFullscreenElement&&document.webkitExitFullscreen) document.webkitExitFullscreen();
+    lab.classList.remove('fs-fallback'); $('fsBtn').textContent='Full screen'; return;
+  }
+  var req=lab.requestFullscreen||lab.webkitRequestFullscreen;
+  var p=null; try{ if(req) p=req.call(lab); }catch(e){ p=null; }
+  if(p&&p.catch) p.catch(function(){lab.classList.add('fs-fallback');});
+  else if(!req) lab.classList.add('fs-fallback');
+  $('fsBtn').textContent='Exit full screen';
+});
+function fsChange(){ if(!document.fullscreenElement&&!document.webkitFullscreenElement&&!$('lab').classList.contains('fs-fallback')) $('fsBtn').textContent='Full screen'; }
+document.addEventListener('fullscreenchange',fsChange); document.addEventListener('webkitfullscreenchange',fsChange);
+
+buildList(); updateCounts();
+
+/* ---------- 3D ---------- */
+function fail(msg){ $('loadMsg').textContent=msg; }
+if(!window.THREE||!THREE.GLTFLoader||!THREE.OrbitControls){ fail('The 3D view could not load. You can still use the list of parts in the panel.'); return; }
+
+var canvas=$('cv'), vp=$('viewport');
+var renderer;
+try{ renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true}); }
+catch(e){ fail('3D graphics are not available in this browser. You can still use the list of parts in the panel.'); return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(32,1,0.01,50);
+scene.add(new THREE.HemisphereLight(0xffffff,0xb8c8d2,0.95));
+var key=new THREE.DirectionalLight(0xffffff,0.85); key.position.set(1.2,2,2.2); scene.add(key);
+var rim=new THREE.DirectionalLight(0xffffff,0.45); rim.position.set(-1.5,1.4,-2.2); scene.add(rim);
+var back=new THREE.DirectionalLight(0xffffff,0.45); back.position.set(0.8,1.2,-2.4); scene.add(back);
+var controls=new THREE.OrbitControls(camera,canvas);
+controls.enableDamping=true; controls.dampingFactor=0.08; controls.enablePan=false;
+controls.minPolarAngle=0.35; controls.maxPolarAngle=Math.PI-0.45;
+
+var center=new THREE.Vector3(), size=new THREE.Vector3(), baseDist=1, model, shellGroup=new THREE.Group(), floor;
+scene.add(shellGroup);
+
+function resize(){
+  var w=vp.clientWidth,h=vp.clientHeight; if(!w||!h) return;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  baseDist=fitDist(state.xray?TIERS.C.k*1.05:1.0);
+}
+function fitDist(scale){
+  var halfH=size.y*0.62*scale, halfW=Math.max(size.x,size.z)*0.75*scale;
+  var vFov=camera.fov*Math.PI/180, hFov=2*Math.atan(Math.tan(vFov/2)*camera.aspect);
+  return Math.max(halfH/Math.tan(vFov/2), halfW/Math.tan(hFov/2))*1.08;
+}
+new (window.ResizeObserver||function(cb){window.addEventListener('resize',cb);return{observe:function(){}};})(function(){resize();}).observe(vp);
+
+/* find a point on a label mesh from a texture coordinate */
+function pointFromUV(mesh,u,v){
+  var g=mesh.geometry, pos=g.attributes.position, uv=g.attributes.uv, idx=g.index;
+  var n=idx?idx.count:pos.count, a=new THREE.Vector2(),b=new THREE.Vector2(),c=new THREE.Vector2(),p=new THREE.Vector2(u,v);
+  for(var i=0;i<n;i+=3){
+    var i0=idx?idx.getX(i):i, i1=idx?idx.getX(i+1):i+1, i2=idx?idx.getX(i+2):i+2;
+    a.set(uv.getX(i0),uv.getY(i0)); b.set(uv.getX(i1),uv.getY(i1)); c.set(uv.getX(i2),uv.getY(i2));
+    var d=(b.y-c.y)*(a.x-c.x)+(c.x-b.x)*(a.y-c.y); if(Math.abs(d)<1e-12) continue;
+    var w0=((b.y-c.y)*(p.x-c.x)+(c.x-b.x)*(p.y-c.y))/d, w1=((c.y-a.y)*(p.x-c.x)+(a.x-c.x)*(p.y-c.y))/d, w2=1-w0-w1;
+    if(w0>=-1e-4&&w1>=-1e-4&&w2>=-1e-4){
+      var A=new THREE.Vector3().fromBufferAttribute(pos,i0).applyMatrix4(mesh.matrixWorld);
+      var B=new THREE.Vector3().fromBufferAttribute(pos,i1).applyMatrix4(mesh.matrixWorld);
+      var C=new THREE.Vector3().fromBufferAttribute(pos,i2).applyMatrix4(mesh.matrixWorld);
+      var P=A.clone().multiplyScalar(w0).add(B.clone().multiplyScalar(w1)).add(C.clone().multiplyScalar(w2));
+      var N=new THREE.Vector3().subVectors(B,A).cross(new THREE.Vector3().subVectors(C,A)).normalize();
+      var out=new THREE.Vector3(P.x-center.x,0,P.z-center.z); if(N.dot(out)<0) N.negate();
+      return {p:P,n:N};
+    }
+  }
+  return null;
+}
+function sealTexture(){
+  var c=document.createElement('canvas'); c.width=c.height=256; var x=c.getContext('2d');
+  x.fillStyle='#ffffff'; x.beginPath(); x.arc(128,128,124,0,Math.PI*2); x.fill();
+  x.lineWidth=12; x.strokeStyle='#3d9a4b'; x.beginPath(); x.arc(128,128,112,0,Math.PI*2); x.stroke();
+  x.lineWidth=3; x.strokeStyle='#1d4f91'; x.beginPath(); x.arc(128,128,96,0,Math.PI*2); x.stroke();
+  x.fillStyle='#1d4f91'; x.textAlign='center'; x.textBaseline='middle';
+  x.font='bold 40px Arial'; x.fillText('SAFETY',128,96); x.fillText('TESTED',128,140);
+  x.font='bold 22px Arial'; x.fillStyle='#3d9a4b'; x.fillText('LOT 2026-117',128,184);
+  var t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t;
+}
+
+var loader=new THREE.GLTFLoader();
+loader.load(MODEL_URL,function(gltf){
+  model=gltf.scene; scene.add(model); model.updateMatrixWorld(true);
+  var box=new THREE.Box3().setFromObject(model); box.getCenter(center); box.getSize(size);
+  var labels={}, trigger=null, body=null;
+  model.traverse(function(o){
+    if(!o.isMesh) return;
+    var mn=(o.material&&o.material.name)||'';
+    if(/front label/i.test(mn)) labels.front=o;
+    if(/back label/i.test(mn)) labels.back=o;
+    if(/Arc02/.test(o.name)) trigger=o;
+    if(/PLASTIC/.test(o.name)||/PLASTIC/i.test(mn)) body=o;
+    if(o.material){ o.material.side=THREE.DoubleSide; }
+    if(/label/i.test(mn)){ o.material.transparent=true; o.material.opacity=1; o.renderOrder=3; }
+    else if(o.material&&o.material.transparent){ o.renderOrder=1; }
+  });
+  // soft contact shadow
+  var sc=document.createElement('canvas'); sc.width=sc.height=128; var sx=sc.getContext('2d');
+  var gr=sx.createRadialGradient(64,64,4,64,64,62); gr.addColorStop(0,'rgba(9,47,73,.28)'); gr.addColorStop(1,'rgba(9,47,73,0)');
+  sx.fillStyle=gr; sx.fillRect(0,0,128,128);
+  floor=new THREE.Mesh(new THREE.PlaneGeometry(size.x*2.2,size.x*1.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(sc),transparent:true,depthWrite:false}));
+  floor.rotation.x=-Math.PI/2; floor.position.set(center.x,box.min.y+0.0005,center.z); scene.add(floor);
+
+  PARTS.forEach(function(p){
+    var r=null;
+    if(p.where.label && labels[p.where.label]) r=pointFromUV(labels[p.where.label],p.where.uv[0],p.where.uv[1]);
+    if(p.where.mesh==='trigger' && trigger){
+      var tb=new THREE.Box3().setFromObject(trigger), tc=tb.getCenter(new THREE.Vector3());
+      r={p:new THREE.Vector3(tc.x,tc.y,tc.z), n:new THREE.Vector3(tc.x-center.x,0,tc.z-center.z).normalize()};
+      if(r.n.lengthSq()<1e-6) r.n.set(0,0,1);
+    }
+    if(p.where.seal){
+      var y=box.min.y+size.y*0.585, ray=new THREE.Raycaster(new THREE.Vector3(center.x,y,center.z+1),new THREE.Vector3(0,0,-1));
+      var hits=body?ray.intersectObject(body,false):[];
+      var zf=hits.length?hits[0].point.z:center.z+size.z*0.45;
+      var nrm=hits.length&&hits[0].face?hits[0].face.normal.clone().transformDirection(body.matrixWorld):new THREE.Vector3(0,0,1);
+      if(nrm.z<0) nrm.negate();
+      var rad=size.x*0.11, seal=new THREE.Mesh(new THREE.CircleGeometry(rad,48),new THREE.MeshStandardMaterial({map:sealTexture(),roughness:.55,metalness:0}));
+      var sp=new THREE.Vector3(center.x,y,zf).add(nrm.clone().multiplyScalar(0.0015));
+      seal.position.copy(sp); seal.lookAt(sp.clone().add(nrm)); scene.add(seal);
+      var side=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),nrm).normalize();
+      r={p:sp.clone().add(side.multiplyScalar(-rad*1.9)),n:nrm};
+    }
+    if(r){ hsPos[p.id]={p:r.p.clone().add(r.n.clone().multiplyScalar(0.004)), n:r.n}; }
+  });
+
+  // X-ray shells
+  var ry=size.y*0.56, rxz=Math.max(size.x,size.z)*0.62;
+  TIER_ORDER.forEach(function(t){
+    var k=TIERS[t].k, col=new THREE.Color(TIERS[t].color);
+    var geo=new THREE.SphereGeometry(1,48,32);
+    var mat=new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.07,depthWrite:false,side:THREE.DoubleSide});
+    var m=new THREE.Mesh(geo,mat); m.scale.set(rxz*k,ry*k,rxz*k*0.8); m.position.copy(center);
+    var ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:97},function(_,i){var a=i/96*Math.PI*2;return new THREE.Vector3(Math.cos(a),0,Math.sin(a));})),
+      new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.75}));
+    ring.scale.set(rxz*k,1,rxz*k*0.8); ring.position.set(center.x,center.y,center.z);
+    var edge=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:97},function(_,i){var a=i/96*Math.PI*2;return new THREE.Vector3(Math.cos(a),Math.sin(a),0);})),
+      new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.55}));
+    edge.scale.set(rxz*k,ry*k,1); edge.position.copy(center);
+    var g=new THREE.Group(); g.add(m); g.add(ring); g.add(edge); g.visible=false; shellGroup.add(g);
+    shells[t]={g:g,mesh:m,ring:ring,edge:edge,top:new THREE.Vector3(center.x,center.y+ry*k,center.z)};
+    var tag=document.createElement('span'); tag.className='shell-tag'; tag.style.color=TIERS[t].color; tag.textContent=TIERS[t].name; tag.hidden=true;
+    $('hsLayer').appendChild(tag); shells[t].tag=tag;
+  });
+
+  buildMarkers();
+  controls.target.copy(center); resize(); resetView(true);
+  three.ready=true; $('loading').hidden=true;
+  if(state.active) updateMarkers(true);
+  animate();
+},function(ev){
+  if(ev.total) $('loadMsg').textContent='Loading the 3D model… '+Math.round(ev.loaded/ev.total*100)+'%';
+},function(){ fail('The 3D model could not be loaded. You can still use the list of parts in the panel.'); });
+
+function buildMarkers(){
+  PARTS.forEach(function(p){
+    if(!hsPos[p.id]) return;
+    var b=document.createElement('button'); b.type='button'; b.className='hs new';
+    b.setAttribute('aria-label','Open: '+p.short);
+    b.innerHTML='<span class="tip">'+esc(p.short)+'</span><span class="rings"></span>';
+    b.addEventListener('click',function(){openPart(p.id,true);});
+    $('hsLayer').appendChild(b); markers[p.id]=b;
+  });
+  updateMarkers(true);
+}
+function updateMarkers(classesToo){
+  if(!classesToo) return;
+  PARTS.forEach(function(p){
+    var b=markers[p.id]; if(!b) return;
+    b.classList.toggle('seen',!!state.seen[p.id]); b.classList.toggle('new',!state.seen[p.id]);
+    b.classList.toggle('active',state.active===p.id);
+    var rings=b.querySelector('.rings');
+    rings.innerHTML=(state.xray&&state.seen[p.id])?p.tiers.map(function(t){return '<i style="background:'+TIERS[t].color+'"></i>';}).join(''):'';
+  });
+  applyLayer();
+}
+function applyLayer(){
+  PARTS.forEach(function(p){
+    var b=markers[p.id]; if(!b) return;
+    b.classList.toggle('dim',!!(state.xray&&state.layer&&state.layer!=='C'&&p.tiers.indexOf(state.layer)<0));
+  });
+  TIER_ORDER.forEach(function(t){
+    var s=shells[t]; if(!s) return;
+    var on=!state.layer||state.layer===t;
+    s.mesh.material.opacity=state.layer===t?.18:(on?.09:.03);
+    s.ring.material.opacity=on?.8:.2; s.edge.material.opacity=on?.6:.15;
+  });
+}
+function setXray(on){
+  state.xray=on; $('xrayBtn').setAttribute('aria-pressed',on?'true':'false');
+  if(!on) state.layer=null;
+  TIER_ORDER.forEach(function(t){ if(shells[t]){shells[t].g.visible=on; shells[t].tag.hidden=!on;} });
+  buildLayers(); updateMarkers(true);
+  if(three.ready){ baseDist=fitDist(on?TIERS.C.k*1.05:1.0); zoomTo(baseDist); }
+}
+$('xrayBtn').addEventListener('click',function(){ setXray(!state.xray); });
+$('resetView').addEventListener('click',function(){ resetView(); });
+
+/* camera animation */
+var anim=null;
+function sph(v){ var d=v.clone().sub(controls.target); var r=d.length(); return {r:r,th:Math.atan2(d.x,d.z),ph:Math.acos(Math.max(-1,Math.min(1,d.y/r)))}; }
+function animateTo(th,ph,r,dur,tgt){
+  var s=sph(camera.position); var dth=th-s.th; while(dth>Math.PI)dth-=Math.PI*2; while(dth<-Math.PI)dth+=Math.PI*2;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) dur=1;
+  anim={t0:performance.now(),dur:dur||700,from:s,to:{th:s.th+dth,ph:ph,r:r},tf:controls.target.clone(),tt:(tgt||controls.target).clone()};
+}
+function resetView(instant){ animateTo(0.42,1.38,baseDist,instant?1:700,center); }
+function zoomTo(r){ var s=sph(camera.position); animateTo(s.th,s.ph,r,600,center); }
+function flyTo(id){
+  var h=hsPos[id]; if(!h) return;
+  var th=Math.atan2(h.n.x,h.n.z), ph=1.42, tgt=center.clone();
+  if(id==='trigger'){ th=-0.75; ph=1.2; }
+  if(!state.xray){ tgt.y=center.y+(h.p.y-center.y)*0.85; }
+  animateTo(th,ph,state.xray?baseDist:baseDist*(id==='trigger'?0.62:0.66),800,tgt);
+}
+controls.minDistance=0.12; controls.maxDistance=6;
+
+var tmp=new THREE.Vector3();
+function project(v){ tmp.copy(v).project(camera); return {x:(tmp.x+1)/2*vp.clientWidth,y:(1-tmp.y)/2*vp.clientHeight,z:tmp.z}; }
+function animate(){
+  requestAnimationFrame(animate);
+  if(anim){
+    var k=Math.min(1,(performance.now()-anim.t0)/anim.dur), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    var th=anim.from.th+(anim.to.th-anim.from.th)*e, ph=anim.from.ph+(anim.to.ph-anim.from.ph)*e, r=anim.from.r+(anim.to.r-anim.from.r)*e;
+    controls.target.lerpVectors(anim.tf,anim.tt,e);
+    camera.position.set(controls.target.x+r*Math.sin(ph)*Math.sin(th),controls.target.y+r*Math.cos(ph),controls.target.z+r*Math.sin(ph)*Math.cos(th));
+    if(k>=1) anim=null;
+  }
+  controls.update();
+  renderer.render(scene,camera);
+  var camDir=new THREE.Vector3();
+  PARTS.forEach(function(p){
+    var b=markers[p.id], h=hsPos[p.id]; if(!b||!h) return;
+    var s=project(h.p); camDir.subVectors(camera.position,h.p).normalize();
+    var facing=camDir.dot(h.n)>(p.id==='trigger'?-0.6:0.12);
+    b.style.left=s.x+'px'; b.style.top=s.y+'px';
+    b.classList.toggle('away',!facing||s.z>1);
+    b.tabIndex=facing?0:-1;
+  });
+  if(state.xray) TIER_ORDER.forEach(function(t){ var s=shells[t]; if(!s) return; var q=project(s.top); s.tag.style.left=q.x+'px'; s.tag.style.top=(q.y-2)+'px'; });
+}
+canvas.addEventListener('keydown',function(e){
+  var s=sph(camera.position), step=0.25;
+  if(e.key==='ArrowLeft'){animateTo(s.th-step,s.ph,s.r,250);e.preventDefault();}
+  if(e.key==='ArrowRight'){animateTo(s.th+step,s.ph,s.r,250);e.preventDefault();}
+  if(e.key==='ArrowUp'){animateTo(s.th,Math.max(.4,s.ph-.15),s.r,250);e.preventDefault();}
+  if(e.key==='ArrowDown'){animateTo(s.th,Math.min(Math.PI-.5,s.ph+.15),s.r,250);e.preventDefault();}
+});
+three.flyTo=flyTo;
+})();
+</script>
+</body>
+</html>
